@@ -8,6 +8,7 @@
 #include "Bird.h"
 #include "ExampleGameObject.h"
 
+
 using namespace std;
 
 int main(int args[])
@@ -23,9 +24,10 @@ int main(int args[])
 	application->SetTargetFPS(60);
 	application->SetColor(Color(255, 10, 40, 255));
 
+	int amountOfbirds = 15;
 	std::vector<Bird*>* birds = new vector<Bird*>;
 
-	for (int i = 10; i > 0; i--) {
+	for (int i = amountOfbirds; i > 0; i--) {
 		Bird* bird = new Bird(i, birds, 250, 250 + i * 100);
 		birds->push_back(bird);
 		application->AddRenderable(bird);

@@ -3,11 +3,12 @@
 
 
 
-Bird::Bird(int birdId, std::vector<Bird*>* birdsIn, int xIn, int yIn)
+Bird::Bird(int birdId, std::vector<Bird*>* birdsIn, double xIn, double yIn)
 {
+
 	x = xIn;
 	y = yIn;
-	direction.setRichting(3, 1);
+
 	birds = birdsIn;
 	id = birdId;
 
@@ -16,6 +17,8 @@ Bird::Bird(int birdId, std::vector<Bird*>* birdsIn, int xIn, int yIn)
 	this->SetSize(50, 50);
 	SetOffset(x, y);
 
+	direction.setRichting(yIn, 16);
+	
 }
 
 Bird::~Bird()
@@ -24,11 +27,13 @@ Bird::~Bird()
 }
 
 void Bird::Update(float deltaTime) {
-	//const int a = (int)(sin(mApplication->GetTimeSinceStartedMS() / 300.0) * 15.0 + 400);
-	//SetOffset(a, 250);
 
-	x = x + direction.x;
-	y = y + direction.y;
+
+	double currVectorLength = direction.getLength(x, y);
+	double eenheidsVectorx = direction.x / currVectorLength;
+	double eenheidsVectory = direction.y / currVectorLength;
+	x = x + (eenheidsVectorx * speed);
+	y = y + (eenheidsVectory * speed);
 
 	if (x > 800) x = x - 800;
 	if (x < 0) x = x + 800;
@@ -37,20 +42,35 @@ void Bird::Update(float deltaTime) {
 
 	std::vector<Bird*> nearbyBirds = getNearbyBirds();
 	Vector one = avoidCollision(nearbyBirds);
-	Vector two = mimicDirection(nearbyBirds);
-	Vector three = stayNearOthers(nearbyBirds);
+	//Vector two = mimicDirection(nearbyBirds);
+	//Vector three = stayNearOthers(nearbyBirds);
+
+	direction = one;
+
 
 	SetOffset(x, y);
 }
 
 Vector Bird::avoidCollision(std::vector<Bird*> nearbyBirds) {
+	Vector returnVector;
+	returnVector.x = 0;
+	returnVector.y = 0;
+
 	for each (Bird* bird in nearbyBirds)
 	{
 		if (bird->id != id) {
-			direction = addVectors(direction, bird->direction);
+			Vector v = getOppositeVector(bird->direction);
+			returnVector = addVectors(v, returnVector);
 		}
 	}
-	return direction;
+
+	if (nearbyBirds.size() > 1) {
+		return returnVector;
+	}
+	else {
+		return direction;
+	}
+	
 }
 
 Vector Bird::mimicDirection(std::vector<Bird*> nearbyBirds) {
@@ -68,6 +88,12 @@ Vector Bird::addVectors(Vector vectorOne, Vector vectorTwo) {
 	newVector.x = vectorOne.x + vectorTwo.x;
 	newVector.y = vectorOne.y + vectorTwo.y;
 	return newVector;
+}
+
+Vector Bird::getOppositeVector(Vector v) {
+	v.x = v.x - (v.x * 2);
+	v.y = v.y - (v.y * 2);
+	return v;
 }
 
 std::vector<Bird*> Bird::getNearbyBirds()

@@ -5,10 +5,11 @@ public:
 	Vector();
 	~Vector();
 
-	void setRichting(int xIn, int yIn);
+	void setRichting(double xIn, double yIn);
 
-	int x;
-	int y;
-	int speed = 3;
+	double getLength(double xIn, double yIn);
+
+	double x;
+	double y;
 };
 
