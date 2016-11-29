@@ -6,7 +6,7 @@
 Bird::Bird(int birdId, std::vector<Bird*>* birdsIn, int xIn, int yIn)
 {
 	x = xIn;
-	y = yIn;	
+	y = yIn;
 	direction.setRichting(3, 1);
 	birds = birdsIn;
 	id = birdId;
