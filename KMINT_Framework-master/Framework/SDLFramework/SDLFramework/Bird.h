@@ -20,12 +20,13 @@ public:
 	int id;
 	std::vector<Bird*>* birds;
 private:
-	double range = 10;
+	double collisionRadius = 20;
+	double directionRadius = 20;
 	double speed = 2;
 	int screenWidth = 800;
 	int screenHeigth = 600;
 	SDL_Texture *texture;
-	std::vector<Bird*> getNearbyBirds();
+	std::vector<Bird*> getNearbyBirds(double range);
 	int generateRandom(int min, int max);
 	std::random_device rd;
 };

@@ -38,27 +38,30 @@ void Bird::Update(float deltaTime) {
 	double eenheidsVectory = direction.y / currVectorLength;
 	x = x + (eenheidsVectorx * speed);
 	y = y + (eenheidsVectory * speed);
-
+	//direction.x = x + eenheidsVectorx;
+	//direction.y = y + eenheidsVectory;
 	if (x > 800) x = x - 800;
 	if (x < 0) x = x + 800;
 	if (y > 600) y = y - 600;
 	if (y < 0) y = y + 600;
 
-	std::vector<Bird*> nearbyBirds = getNearbyBirds();
-	Vector one = avoidCollision(nearbyBirds);
-	//Vector two = mimicDirection(nearbyBirds);
+	Vector one = avoidCollision(getNearbyBirds(collisionRadius));
+	Vector two = mimicDirection(getNearbyBirds(directionRadius));
 	//Vector three = stayNearOthers(nearbyBirds);
 
-	direction = one;
+	one = addVectors(one, two);
+	if (one.x == 0)  one.x = direction.x;
+	if (one.y == 0) one.y = direction.y;
 
+	direction = one;
 
 	SetOffset(x, y);
 }
 
 Vector Bird::avoidCollision(std::vector<Bird*> nearbyBirds) {
 	Vector returnVector;
-	returnVector.x = direction.x;
-	returnVector.y = direction.y;
+	returnVector.x = 0;
+	returnVector.y = 0;
 
 	for each (Bird* bird in nearbyBirds)
 	{
@@ -77,8 +80,18 @@ Vector Bird::avoidCollision(std::vector<Bird*> nearbyBirds) {
 }
 
 Vector Bird::mimicDirection(std::vector<Bird*> nearbyBirds) {
-	Vector v;
-	return v;
+	Vector returnVector;
+	returnVector.x = 0;
+	returnVector.y = 0;
+
+	for each (Bird* bird in nearbyBirds)
+	{
+		if (bird->id != id) {
+			returnVector = addVectors(returnVector, bird->direction);
+		}
+	}
+
+	return returnVector;
 }
 
 Vector Bird::stayNearOthers(std::vector<Bird*> nearbyBirds) {
@@ -99,7 +112,7 @@ Vector Bird::getOppositeVector(Vector v) {
 	return v;
 }
 
-std::vector<Bird*> Bird::getNearbyBirds()
+std::vector<Bird*> Bird::getNearbyBirds(double range)
 {
 	std::vector<Bird*> nearbyBirds;
 	std::vector<Bird*>& birdsRef = *birds;
@@ -114,10 +127,8 @@ std::vector<Bird*> Bird::getNearbyBirds()
 
 
 int Bird::generateRandom(int min, int max) {
-
-   // only used once to initialise (seed) engine
-	std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
-	std::uniform_int_distribution<int> uni(min, max); // guaranteed unbiased
+	std::mt19937 rng(rd()); 
+	std::uniform_int_distribution<int> uni(min, max); 
 
 	auto random_integer = uni(rng);
 	return random_integer;
