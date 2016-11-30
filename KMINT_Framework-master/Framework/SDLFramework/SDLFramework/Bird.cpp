@@ -1,6 +1,7 @@
 #include "Bird.h"
 #include <SDL_render.h>
-
+#include <chrono>
+#include <thread>
 
 
 Bird::Bird(int birdId, std::vector<Bird*>* birdsIn, double xIn, double yIn)
@@ -12,12 +13,14 @@ Bird::Bird(int birdId, std::vector<Bird*>* birdsIn, double xIn, double yIn)
 	birds = birdsIn;
 	id = birdId;
 
-	texture = mApplication->LoadTexture("square.gif");
+	texture = mApplication->LoadTexture("square.png");
 	this->SetTexture(texture);
-	this->SetSize(50, 50);
+	this->SetSize(10, 10);
 	SetOffset(x, y);
 
-	direction.setRichting(yIn, 16);
+	int a = generateRandom(-1000, 1000);
+	int b = generateRandom(-1000, 1000);
+	direction.setRichting(a, b);
 	
 }
 
@@ -27,7 +30,8 @@ Bird::~Bird()
 }
 
 void Bird::Update(float deltaTime) {
-
+	//if (direction.x == 0) direction.x = generateRandom(-1000, 1000);
+	//if (direction.y == 0) direction.y = generateRandom(-1000, 1000);
 
 	double currVectorLength = direction.getLength(x, y);
 	double eenheidsVectorx = direction.x / currVectorLength;
@@ -53,24 +57,23 @@ void Bird::Update(float deltaTime) {
 
 Vector Bird::avoidCollision(std::vector<Bird*> nearbyBirds) {
 	Vector returnVector;
-	returnVector.x = 0;
-	returnVector.y = 0;
+	returnVector.x = direction.x;
+	returnVector.y = direction.y;
 
 	for each (Bird* bird in nearbyBirds)
 	{
 		if (bird->id != id) {
-			Vector v = getOppositeVector(bird->direction);
-			returnVector = addVectors(v, returnVector);
+			if (bird->x > this->x && bird->direction.x < this->direction.x || bird->x < this->x && bird->direction.x > this->direction.x) {
+				returnVector.x = this->direction.x - (this->direction.x * 2);
+			}
+			if (bird->y > this->y && bird->direction.y < this->direction.y || bird->y < this->y && bird->direction.y > this->direction.y) {
+				returnVector.y = this->direction.y - (this->direction.y * 2);
+			}
 		}
 	}
-
-	if (nearbyBirds.size() > 1) {
-		return returnVector;
-	}
-	else {
-		return direction;
-	}
 	
+	return returnVector;
+
 }
 
 Vector Bird::mimicDirection(std::vector<Bird*> nearbyBirds) {
@@ -107,4 +110,15 @@ std::vector<Bird*> Bird::getNearbyBirds()
 	}
 
 	return nearbyBirds;
+}
+
+
+int Bird::generateRandom(int min, int max) {
+
+   // only used once to initialise (seed) engine
+	std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
+	std::uniform_int_distribution<int> uni(min, max); // guaranteed unbiased
+
+	auto random_integer = uni(rng);
+	return random_integer;
 }

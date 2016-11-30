@@ -1,6 +1,7 @@
 #pragma once
 #include "IGameObject.h"
 #include "vector.h"
+#include <random>
 
 class Bird : public IGameObject
 {
@@ -19,11 +20,13 @@ public:
 	int id;
 	std::vector<Bird*>* birds;
 private:
-	double range = 100;
-	double speed = 4;
+	double range = 10;
+	double speed = 2;
 	int screenWidth = 800;
 	int screenHeigth = 600;
 	SDL_Texture *texture;
 	std::vector<Bird*> getNearbyBirds();
+	int generateRandom(int min, int max);
+	std::random_device rd;
 };
 
