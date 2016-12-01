@@ -5,7 +5,7 @@
 
 #ifdef _WIN32
 #define PATH_SEP "\\"
-#elif
+#else
 #define PATH_SEP "/"
 #endif
 

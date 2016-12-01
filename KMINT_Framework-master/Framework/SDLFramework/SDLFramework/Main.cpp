@@ -8,6 +8,7 @@
 #include "Bird.h"
 #include "ExampleGameObject.h"
 
+
 using namespace std;
 
 int main(int args[])
@@ -19,14 +20,15 @@ int main(int args[])
 		LOG("Couldn't create window...");
 		return EXIT_FAILURE;
 	}
-	
+
 	application->SetTargetFPS(60);
 	application->SetColor(Color(255, 10, 40, 255));
-	
+
+	int amountOfbirds = 20;
 	std::vector<Bird*>* birds = new vector<Bird*>;
 
-	for (int i = 10; i > 0; i--) {
-		Bird* bird = new Bird(i, birds, 250, 250 + i *100);
+	for (int i = amountOfbirds; i > 0; i--) {
+		Bird* bird = new Bird(i, birds, 250+ i * 100, 250 + i * 100);
 		birds->push_back(bird);
 		application->AddRenderable(bird);
 	}
@@ -45,14 +47,14 @@ int main(int args[])
 				application->Quit();
 				break;
 			case SDL_KEYDOWN:
-				switch (event.key.keysym.sym){
+				switch (event.key.keysym.sym) {
 
 				default:
 					break;
 				}
 			}
 		}
-		
+
 		// This is example code, replace with your own!
 
 		// Dancing cow
@@ -80,7 +82,7 @@ int main(int args[])
 		application->RenderGameObjects();
 		application->EndTick();
 	}
-	
+
 	for each (Bird* var in *birds)
 	{
 		delete var;
