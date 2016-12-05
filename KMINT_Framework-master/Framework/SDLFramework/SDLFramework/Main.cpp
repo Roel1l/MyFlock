@@ -24,7 +24,7 @@ int main(int args[])
 	application->SetTargetFPS(60);
 	application->SetColor(Color(255, 10, 40, 255));
 
-	int amountOfbirds = 20;
+	int amountOfbirds = 100;
 	std::vector<Bird*>* birds = new vector<Bird*>;
 
 	for (int i = amountOfbirds; i > 0; i--) {

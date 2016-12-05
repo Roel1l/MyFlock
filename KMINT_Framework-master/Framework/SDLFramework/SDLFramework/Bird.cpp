@@ -2,7 +2,7 @@
 #include <SDL_render.h>
 #include <chrono>
 #include <thread>
-
+#include <iostream>
 
 Bird::Bird(int birdId, std::vector<Bird*>* birdsIn, double xIn, double yIn)
 {
@@ -33,11 +33,14 @@ void Bird::Update(float deltaTime) {
 	//if (direction.x == 0) direction.x = generateRandom(-1000, 1000);
 	//if (direction.y == 0) direction.y = generateRandom(-1000, 1000);
 
-	double currVectorLength = direction.getLength(x, y);
-	double eenheidsVectorx = direction.x / currVectorLength;
-	double eenheidsVectory = direction.y / currVectorLength;
-	x = x + (eenheidsVectorx * speed);
-	y = y + (eenheidsVectory * speed);
+	double currVectorLength = direction.getLength();
+	
+	if (currVectorLength > 10) {
+		direction.x = direction.x / currVectorLength * 10;
+		direction.y = direction.y / currVectorLength * 10;
+	}
+	x = x + direction.x;
+	y = y + direction.y;
 	//direction.x = x + eenheidsVectorx;
 	//direction.y = y + eenheidsVectory;
 	if (x > 800) x = x - 800;
@@ -45,15 +48,18 @@ void Bird::Update(float deltaTime) {
 	if (y > 600) y = y - 600;
 	if (y < 0) y = y + 600;
 
+	std::cout << x << std::endl;
+
 	Vector one = avoidCollision(getNearbyBirds(collisionRadius));
-	Vector two = mimicDirection(getNearbyBirds(directionRadius));
+	//Vector two = mimicDirection(getNearbyBirds(directionRadius));
 	//Vector three = stayNearOthers(nearbyBirds);
 
-	one = addVectors(one, two);
-	if (one.x == 0)  one.x = direction.x;
-	if (one.y == 0) one.y = direction.y;
+	//one = addVectors(one, two);
+	//if (one.x == 0)  one.x = direction.x;
+	//if (one.y == 0) one.y = direction.y;
 
-	direction = one;
+	direction.x += one.x;
+	direction.y += one.y;
 
 	SetOffset(x, y);
 }
@@ -63,15 +69,27 @@ Vector Bird::avoidCollision(std::vector<Bird*> nearbyBirds) {
 	returnVector.x = 0;
 	returnVector.y = 0;
 
-	for each (Bird* bird in nearbyBirds)
+	for each (Bird* otherBird in nearbyBirds)
 	{
-		if (bird->id != id) {
-			if (bird->x > this->x && bird->direction.x < this->direction.x || bird->x < this->x && bird->direction.x > this->direction.x) {
-				returnVector.x = this->direction.x - (this->direction.x * 2);
+		if (otherBird->id != id) {
+			Vector temp;
+			temp.x += x - otherBird->x;
+			temp.y += y - otherBird->y;
+			
+			double length = temp.getLength();
+			if (length > 1) {
+				temp.x = temp.x / length * 1;
+				temp.y = temp.y / length * 1;
 			}
-			if (bird->y > this->y && bird->direction.y < this->direction.y || bird->y < this->y && bird->direction.y > this->direction.y) {
-				returnVector.y = this->direction.y - (this->direction.y * 2);
-			}
+
+			returnVector.x += temp.x;
+			returnVector.y += temp.y;
+			//if (bird->x > this->x && bird->direction.x < this->direction.x || bird->x < this->x && bird->direction.x > this->direction.x) {
+			//	returnVector.x = this->direction.x - (this->direction.x * 2);
+			//}
+			//if (bird->y > this->y && bird->direction.y < this->direction.y || bird->y < this->y && bird->direction.y > this->direction.y) {
+			//	returnVector.y = this->direction.y - (this->direction.y * 2);
+			//}
 		}
 	}
 	
