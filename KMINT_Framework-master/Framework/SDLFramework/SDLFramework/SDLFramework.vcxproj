@@ -98,6 +98,7 @@
     <ClInclude Include="Config.h" />
     <ClInclude Include="FWApplication.h" />
     <ClInclude Include="ExampleGameObject.h" />
+    <ClInclude Include="Globals.h" />
     <ClInclude Include="IGameObject.h" />
     <ClInclude Include="Vector.h" />
   </ItemGroup>

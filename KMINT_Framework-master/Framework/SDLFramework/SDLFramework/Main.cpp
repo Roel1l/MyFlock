@@ -7,12 +7,10 @@
 #include <time.h>
 #include "Bird.h"
 #include "ExampleGameObject.h"
+#include "Globals.h"
 
 
 using namespace std;
-const int AMOUNT_OF_BIRDS = 100;
-
-
 
 int main(int args[])
 {

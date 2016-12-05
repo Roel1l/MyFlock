@@ -3,27 +3,11 @@
 #include <chrono>
 #include <thread>
 #include <iostream>
+#include "Globals.h"
 #define _USE_MATH_DEFINES
 #include <math.h>
 
 
-const bool STAY_NEAR_OTHERS = true;
-const double STICK_RADIUS = 100;
-const double STICK_INTENSITY = 0.1;
-
-const bool AVOID_COLLISION = true;
-const double COLLISION_RADIUS = 15;
-const double COLLISION_INTENSITY = 0.1;
-
-const bool MIMIC_DIRECTION = true;
-const double MIMIC_RADIUS = 50;
-const double MIMIC_INTENSITY = 0.1;
-
-const bool RANDOM_STEERING = true;
-const bool STEER_INTENSITY = 0.1;
-
-const bool RANDOM_SPAWN = true;
-const double SPEED = 10;
 
 Bird::Bird(int birdId, std::vector<Bird*>* birdsIn)
 {
@@ -86,10 +70,10 @@ void Bird::Update(float deltaTime) {
 	x = x + direction.x;
 	y = y + direction.y;
 
-	if (x > 800) x = x - 800;
-	if (x < 0) x = x + 800;
-	if (y > 600) y = y - 600;
-	if (y < 0) y = y + 600;
+	if (x > screenWidth) x = x - screenWidth;
+	if (x < 0) x = x + screenWidth;
+	if (y > screenHeigth) y = y - screenHeigth;
+	if (y < 0) y = y + screenHeigth;
 
 	Vector one = avoidCollision(getNearbyBirds(COLLISION_RADIUS));
 	Vector two = mimicDirection(getNearbyBirds(MIMIC_RADIUS));
