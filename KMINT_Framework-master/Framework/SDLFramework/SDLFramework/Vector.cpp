@@ -17,12 +17,8 @@ void Vector::setRichting(double xIn, double yIn)
 	y = yIn;
 }
 
-double Vector::getLength(double xBird, double yBird) {
-	double yourX = xBird + x;
-	double yourY = xBird + y;
-	double lengteX = yourX - xBird;
-	double lengteY = yourY - yBird;
-	double lengte = sqrt((std::pow(lengteX, 2) + std::pow(lengteY, 2)));
+double Vector::getLength() {
+	double lengte = sqrt((std::pow(x, 2) + std::pow(y, 2)));
 	return lengte;
 }
 

@@ -7,7 +7,8 @@ public:
 
 	void setRichting(double xIn, double yIn);
 
-	double getLength(double xIn, double yIn);
+	double getLength();
+
 
 	double x;
 	double y;

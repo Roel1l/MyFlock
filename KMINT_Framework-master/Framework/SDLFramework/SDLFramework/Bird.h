@@ -20,7 +20,7 @@ public:
 	int id;
 	std::vector<Bird*>* birds;
 private:
-	double collisionRadius = 20;
+	double collisionRadius = 50;
 	double directionRadius = 20;
 	double speed = 2;
 	int screenWidth = 800;
