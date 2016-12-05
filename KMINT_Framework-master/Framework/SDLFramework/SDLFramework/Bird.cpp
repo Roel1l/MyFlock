@@ -16,7 +16,6 @@ Bird::Bird(int birdId, std::vector<Bird*>* birdsIn, double xIn, double yIn)
 	texture = mApplication->LoadTexture("square.png");
 	this->SetTexture(texture);
 	this->SetSize(10, 10);
-	SetOffset(x, y);
 
 	int a = generateRandom(-1000, 1000);
 	int b = generateRandom(-1000, 1000);
@@ -35,10 +34,11 @@ void Bird::Update(float deltaTime) {
 
 	double currVectorLength = direction.getLength();
 	
-	if (currVectorLength > 10) {
-		direction.x = direction.x / currVectorLength * 10;
-		direction.y = direction.y / currVectorLength * 10;
+	if (currVectorLength > speed) {
+		direction.x = direction.x / currVectorLength * speed;
+		direction.y = direction.y / currVectorLength * speed;
 	}
+
 	x = x + direction.x;
 	y = y + direction.y;
 	//direction.x = x + eenheidsVectorx;
@@ -48,10 +48,10 @@ void Bird::Update(float deltaTime) {
 	if (y > 600) y = y - 600;
 	if (y < 0) y = y + 600;
 
-	std::cout << x << std::endl;
+	//std::cout << x << std::endl;
 
 	Vector one = avoidCollision(getNearbyBirds(collisionRadius));
-	//Vector two = mimicDirection(getNearbyBirds(directionRadius));
+	Vector two = mimicDirection(getNearbyBirds(directionRadius));
 	//Vector three = stayNearOthers(nearbyBirds);
 
 	//one = addVectors(one, two);
@@ -61,7 +61,7 @@ void Bird::Update(float deltaTime) {
 	direction.x += one.x;
 	direction.y += one.y;
 
-	SetOffset(x, y);
+	SetOffset(x-5, y-5);
 }
 
 Vector Bird::avoidCollision(std::vector<Bird*> nearbyBirds) {
@@ -73,6 +73,8 @@ Vector Bird::avoidCollision(std::vector<Bird*> nearbyBirds) {
 	{
 		if (otherBird->id != id) {
 			Vector temp;
+			temp.x = 0;
+			temp.y = 0;
 			temp.x += x - otherBird->x;
 			temp.y += y - otherBird->y;
 			
@@ -84,12 +86,6 @@ Vector Bird::avoidCollision(std::vector<Bird*> nearbyBirds) {
 
 			returnVector.x += temp.x;
 			returnVector.y += temp.y;
-			//if (bird->x > this->x && bird->direction.x < this->direction.x || bird->x < this->x && bird->direction.x > this->direction.x) {
-			//	returnVector.x = this->direction.x - (this->direction.x * 2);
-			//}
-			//if (bird->y > this->y && bird->direction.y < this->direction.y || bird->y < this->y && bird->direction.y > this->direction.y) {
-			//	returnVector.y = this->direction.y - (this->direction.y * 2);
-			//}
 		}
 	}
 	
@@ -102,10 +98,11 @@ Vector Bird::mimicDirection(std::vector<Bird*> nearbyBirds) {
 	returnVector.x = 0;
 	returnVector.y = 0;
 
-	for each (Bird* bird in nearbyBirds)
+	for each (Bird* otherBird in nearbyBirds)
 	{
-		if (bird->id != id) {
-			returnVector = addVectors(returnVector, bird->direction);
+		if (otherBird->id != id) {
+			returnVector.x += otherBird->direction.x; 
+			returnVector.y += otherBird->direction.y;
 		}
 	}
 
@@ -115,13 +112,6 @@ Vector Bird::mimicDirection(std::vector<Bird*> nearbyBirds) {
 Vector Bird::stayNearOthers(std::vector<Bird*> nearbyBirds) {
 	Vector v;
 	return v;
-}
-
-Vector Bird::addVectors(Vector vectorOne, Vector vectorTwo) {
-	Vector newVector;
-	newVector.x = vectorOne.x + vectorTwo.x;
-	newVector.y = vectorOne.y + vectorTwo.y;
-	return newVector;
 }
 
 Vector Bird::getOppositeVector(Vector v) {

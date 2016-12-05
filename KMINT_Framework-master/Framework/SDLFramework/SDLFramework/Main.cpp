@@ -28,7 +28,7 @@ int main(int args[])
 	std::vector<Bird*>* birds = new vector<Bird*>;
 
 	for (int i = amountOfbirds; i > 0; i--) {
-		Bird* bird = new Bird(i, birds, 250+ i * 100, 250 + i * 100);
+		Bird* bird = new Bird(i, birds, 250, 250);
 		birds->push_back(bird);
 		application->AddRenderable(bird);
 	}

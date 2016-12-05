@@ -12,7 +12,6 @@ public:
 	Vector avoidCollision(std::vector<Bird*> nearbyBirds);
 	Vector mimicDirection(std::vector<Bird*> nearbyBirds);
 	Vector stayNearOthers(std::vector<Bird*> nearbyBirds);
-	Vector addVectors(Vector vectorOne, Vector vectorTwo);
 	Vector getOppositeVector(Vector v);
 	Vector direction;
 	double x;
@@ -20,9 +19,9 @@ public:
 	int id;
 	std::vector<Bird*>* birds;
 private:
-	double collisionRadius = 50;
+	double collisionRadius = 20;
 	double directionRadius = 20;
-	double speed = 2;
+	double speed = 1;
 	int screenWidth = 800;
 	int screenHeigth = 600;
 	SDL_Texture *texture;
