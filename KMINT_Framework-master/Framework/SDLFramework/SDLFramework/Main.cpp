@@ -10,6 +10,9 @@
 
 
 using namespace std;
+const int AMOUNT_OF_BIRDS = 100;
+
+
 
 int main(int args[])
 {
@@ -24,13 +27,14 @@ int main(int args[])
 	application->SetTargetFPS(60);
 	application->SetColor(Color(255, 10, 40, 255));
 
-	int amountOfbirds = 100;
 	std::vector<Bird*>* birds = new vector<Bird*>;
+	int lastId = 0;
 
-	for (int i = amountOfbirds; i > 0; i--) {
-		Bird* bird = new Bird(i, birds, 250, 250);
+	for (int i = AMOUNT_OF_BIRDS; i > 0; i--) {
+		Bird* bird = new Bird(i, birds);
 		birds->push_back(bird);
 		application->AddRenderable(bird);
+		lastId++;
 	}
 
 
@@ -48,10 +52,23 @@ int main(int args[])
 				break;
 			case SDL_KEYDOWN:
 				switch (event.key.keysym.sym) {
-
+					
 				default:
 					break;
 				}
+				break;
+			case SDL_MOUSEBUTTONDOWN:
+				if (event.button.button == 1) {
+					int mouseX = 0;
+					int mouseY = 0;
+					SDL_GetMouseState(&mouseX, &mouseY);
+	
+					Bird* bird = new Bird(lastId + 1, birds, mouseX, mouseY);
+					birds->push_back(bird);
+					application->AddRenderable(bird);
+					lastId++;
+				}
+				break;
 			}
 		}
 

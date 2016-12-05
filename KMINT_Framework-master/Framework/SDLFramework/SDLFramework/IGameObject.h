@@ -21,7 +21,7 @@ public:
 		if (mWidth == 0 || mHeight == 0)
 			mApplication->DrawTexture(mTexture, mX, mY);
 		else
-			mApplication->DrawTexture(mTexture, mX, mY, mWidth, mHeight);
+			mApplication->DrawTexture(mTexture, mX, mY, mWidth, mHeight, mAngle);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -51,7 +51,7 @@ public:
 	/// <param name="x">	The uint32_t to process. </param>
 	/// <param name="y">	The uint32_t to process. </param>
 	////////////////////////////////////////////////////////////////////////////////////////////////////
-	virtual void SetOffset(uint32_t x, uint32_t y) { this->mX = x; this->mY = y; }
+	virtual void SetOffset(uint32_t x, uint32_t y, uint32_t angle) { this->mX = x; this->mY = y; this->mAngle = angle; }
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// <summary>	Get the offset of this object (translation) </summary>
@@ -210,6 +210,7 @@ protected:
 	
 	uint32_t mX, mY;
 	uint32_t mWidth, mHeight;
+	uint32_t mAngle;
 	bool mIsActive;
 	//Color mColor;
 

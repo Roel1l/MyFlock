@@ -132,13 +132,19 @@ void FWApplication::DrawTexture(SDL_Texture * texture, int xOffset, int yOffset)
 	SDL_QueryTexture(texture, NULL, NULL, &rect.w, &rect.h);
 	SDL_RenderCopy(mRenderer, texture, &rect, &rect);
 }
-void FWApplication::DrawTexture(SDL_Texture * texture, int xOffset, int yOffset, int width, int height)
+void FWApplication::DrawTexture(SDL_Texture * texture, int xOffset, int yOffset, int width, int height, int angle)
 {
 	SDL_Rect rect = { xOffset - (width / 2), yOffset - (height / 2), width, height };
 
 	//SDL_QueryTexture(texture, NULL, NULL, &rect.w, &rect.h);
 	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-	SDL_RenderCopy(mRenderer, texture, NULL, &rect);
+	//SDL_RenderCopy(mRenderer, texture, NULL, &rect);
+
+
+	SDL_Point center = { width/2, height/2 };
+	SDL_RendererFlip flip = SDL_FLIP_NONE;
+
+	SDL_RenderCopyEx(mRenderer, texture, NULL, &rect, angle, &center, flip);
 }
 
 void FWApplication::StartTick()
@@ -263,7 +269,7 @@ void FWApplication::DrawText(const std::string & message, uint32_t offsetX, uint
 		SDL_Texture * texture = SDL_CreateTextureFromSurface(mRenderer, surface);
 		if (texture)
 		{
-			DrawTexture(texture, offsetX, offsetY, surface->w, surface->h);
+			DrawTexture(texture, offsetX, offsetY, surface->w, surface->h, 0);
 		}
 		SDL_FreeSurface(surface);
 		SDL_DestroyTexture(texture);

@@ -6,9 +6,12 @@
 class Bird : public IGameObject
 {
 public:
-	Bird(int birdId, std::vector<Bird*>* b, double xIn, double yIn);
+	Bird(int birdId, std::vector<Bird*>* b);
+	Bird(int birdId, std::vector<Bird*>* birdsIn, int xIn, int yIn);
+	void init();
 	~Bird();
 	void Update(float deltaTime);
+	Vector Steer();
 	Vector avoidCollision(std::vector<Bird*> nearbyBirds);
 	Vector mimicDirection(std::vector<Bird*> nearbyBirds);
 	Vector stayNearOthers(std::vector<Bird*> nearbyBirds);
@@ -16,17 +19,17 @@ public:
 	Vector direction;
 	double x;
 	double y;
+	int angle;
 	int id;
 	std::vector<Bird*>* birds;
 private:
-	double collisionRadius = 20;
-	double directionRadius = 20;
-	double speed = 1;
 	int screenWidth = 800;
 	int screenHeigth = 600;
 	SDL_Texture *texture;
 	std::vector<Bird*> getNearbyBirds(double range);
 	int generateRandom(int min, int max);
 	std::random_device rd;
+	int steerCounter = 0;
+
 };
 
