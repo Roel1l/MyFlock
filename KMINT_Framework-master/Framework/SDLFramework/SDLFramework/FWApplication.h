@@ -118,7 +118,7 @@ public:
 	/// <param name="width">  	The width. </param>
 	/// <param name="height"> 	The height. </param>
 	////////////////////////////////////////////////////////////////////////////////////////////////////
-	void DrawTexture(SDL_Texture * texture, int xOffset, int yOffset, int width, int height);
+	void DrawTexture(SDL_Texture * texture, int xOffset, int yOffset, int width, int height, int angle);
 	
 
 

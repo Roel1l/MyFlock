@@ -3,25 +3,36 @@
 #include <chrono>
 #include <thread>
 #include <iostream>
+#include "Globals.h"
+#define _USE_MATH_DEFINES
+#include <math.h>
 
-Bird::Bird(int birdId, std::vector<Bird*>* birdsIn, double xIn, double yIn)
+
+
+Bird::Bird(int birdId, std::vector<Bird*>* birdsIn)
 {
+	if (RANDOM_SPAWN) {
+		x = generateRandom(0, screenWidth);
+		y = generateRandom(0, screenHeigth);
+	}
+	else { x = screenWidth/2; y = screenHeigth/2; }
 
+	birds = birdsIn;
+	id = birdId;
+
+	init();
+	
+}
+
+Bird::Bird(int birdId, std::vector<Bird*>* birdsIn, int xIn, int yIn)
+{
 	x = xIn;
 	y = yIn;
 
 	birds = birdsIn;
 	id = birdId;
 
-	texture = mApplication->LoadTexture("square.png");
-	this->SetTexture(texture);
-	this->SetSize(10, 10);
-	SetOffset(x, y);
-
-	int a = generateRandom(-1000, 1000);
-	int b = generateRandom(-1000, 1000);
-	direction.setRichting(a, b);
-	
+	init();
 }
 
 Bird::~Bird()
@@ -29,39 +40,74 @@ Bird::~Bird()
 	SDL_DestroyTexture(texture);
 }
 
+
+void Bird::init() {
+	texture = mApplication->LoadTexture("square.png");
+	this->SetTexture(texture);
+	this->SetSize(10, 10);
+
+	int a = generateRandom(-1000, 1000);
+	int b = generateRandom(-1000, 1000);
+	direction.setRichting(a, b);
+}
+
+
 void Bird::Update(float deltaTime) {
-	//if (direction.x == 0) direction.x = generateRandom(-1000, 1000);
-	//if (direction.y == 0) direction.y = generateRandom(-1000, 1000);
+
+	double overstaande = direction.y;
+	double lange = direction.getLength();
+
+	angle = asin(overstaande / lange) * 180 / M_PI;
+	angle += 90;
 
 	double currVectorLength = direction.getLength();
 	
-	if (currVectorLength > 10) {
-		direction.x = direction.x / currVectorLength * 10;
-		direction.y = direction.y / currVectorLength * 10;
+	if (currVectorLength > SPEED) {
+		direction.x = direction.x / currVectorLength * SPEED;
+		direction.y = direction.y / currVectorLength * SPEED;
 	}
+
 	x = x + direction.x;
 	y = y + direction.y;
-	//direction.x = x + eenheidsVectorx;
-	//direction.y = y + eenheidsVectory;
-	if (x > 800) x = x - 800;
-	if (x < 0) x = x + 800;
-	if (y > 600) y = y - 600;
-	if (y < 0) y = y + 600;
 
-	std::cout << x << std::endl;
+	if (x > screenWidth) x = x - screenWidth;
+	if (x < 0) x = x + screenWidth;
+	if (y > screenHeigth) y = y - screenHeigth;
+	if (y < 0) y = y + screenHeigth;
 
-	Vector one = avoidCollision(getNearbyBirds(collisionRadius));
-	//Vector two = mimicDirection(getNearbyBirds(directionRadius));
-	//Vector three = stayNearOthers(nearbyBirds);
+	Vector one = avoidCollision(getNearbyBirds(COLLISION_RADIUS));
+	Vector two = mimicDirection(getNearbyBirds(MIMIC_RADIUS));
+	Vector three = stayNearOthers(getNearbyBirds(STICK_RADIUS));
+	Vector four = Steer();
 
-	//one = addVectors(one, two);
-	//if (one.x == 0)  one.x = direction.x;
-	//if (one.y == 0) one.y = direction.y;
+	if (AVOID_COLLISION) { if(one.x != 0 && one.y != 0) direction.x += one.x; direction.y += one.y; }
+	if (MIMIC_DIRECTION) { if (two.x != 0 && two.y != 0) direction.x += two.x; direction.y += two.y; }
+	if (STAY_NEAR_OTHERS) { if (three.x != 0 && three.y != 0) direction.x += three.x; direction.y += three.y; }
+	if (RANDOM_STEERING) { direction.x += four.x, direction.y += four.y; }
 
-	direction.x += one.x;
-	direction.y += one.y;
+	SetOffset(x-5, y-5, angle);
+}
 
-	SetOffset(x, y);
+Vector Bird::Steer()
+{
+	int power = 5;
+	Vector returnVector;
+
+	int squareX1 = direction.x *10 - power;
+	int squareX2 = direction.x *10 + power;
+	int squareY1 = direction.y *10 - power;
+	int squareY2 = direction.y *10 + power;
+
+	returnVector.x = generateRandom(squareX1, squareX2);
+	returnVector.y = generateRandom(squareY1, squareY2);
+
+	double length = returnVector.getLength();
+	if (length > STEER_INTENSITY) {
+		returnVector.x = returnVector.x / length * STEER_INTENSITY;
+		returnVector.y = returnVector.y / length * STEER_INTENSITY;
+	}
+
+	return returnVector;
 }
 
 Vector Bird::avoidCollision(std::vector<Bird*> nearbyBirds) {
@@ -73,23 +119,19 @@ Vector Bird::avoidCollision(std::vector<Bird*> nearbyBirds) {
 	{
 		if (otherBird->id != id) {
 			Vector temp;
+			temp.x = 0;
+			temp.y = 0;
 			temp.x += x - otherBird->x;
 			temp.y += y - otherBird->y;
 			
 			double length = temp.getLength();
-			if (length > 1) {
-				temp.x = temp.x / length * 1;
-				temp.y = temp.y / length * 1;
+			if (length > COLLISION_INTENSITY) {
+				temp.x = temp.x / length * COLLISION_INTENSITY;
+				temp.y = temp.y / length * COLLISION_INTENSITY;
 			}
 
 			returnVector.x += temp.x;
 			returnVector.y += temp.y;
-			//if (bird->x > this->x && bird->direction.x < this->direction.x || bird->x < this->x && bird->direction.x > this->direction.x) {
-			//	returnVector.x = this->direction.x - (this->direction.x * 2);
-			//}
-			//if (bird->y > this->y && bird->direction.y < this->direction.y || bird->y < this->y && bird->direction.y > this->direction.y) {
-			//	returnVector.y = this->direction.y - (this->direction.y * 2);
-			//}
 		}
 	}
 	
@@ -102,10 +144,24 @@ Vector Bird::mimicDirection(std::vector<Bird*> nearbyBirds) {
 	returnVector.x = 0;
 	returnVector.y = 0;
 
-	for each (Bird* bird in nearbyBirds)
+	for each (Bird* otherBird in nearbyBirds)
 	{
-		if (bird->id != id) {
-			returnVector = addVectors(returnVector, bird->direction);
+		if (otherBird->id != id) {
+			Vector temp;
+			temp.x = 0;
+			temp.y = 0;
+
+			temp.x += otherBird->direction.x;
+			temp.y += otherBird->direction.y;
+
+			double length = temp.getLength();
+			if (length > MIMIC_INTENSITY) {
+				temp.x = temp.x / length * MIMIC_INTENSITY;
+				temp.y = temp.y / length * MIMIC_INTENSITY;
+			}
+
+			returnVector.x += temp.x;
+			returnVector.y += temp.y;
 		}
 	}
 
@@ -113,15 +169,31 @@ Vector Bird::mimicDirection(std::vector<Bird*> nearbyBirds) {
 }
 
 Vector Bird::stayNearOthers(std::vector<Bird*> nearbyBirds) {
-	Vector v;
-	return v;
-}
+	Vector returnVector;
+	returnVector.x = 0;
+	returnVector.y = 0;
 
-Vector Bird::addVectors(Vector vectorOne, Vector vectorTwo) {
-	Vector newVector;
-	newVector.x = vectorOne.x + vectorTwo.x;
-	newVector.y = vectorOne.y + vectorTwo.y;
-	return newVector;
+	for each (Bird* otherBird in nearbyBirds)
+	{
+		if (otherBird->id != id) {
+			Vector temp;
+			temp.x = 0;
+			temp.y = 0;
+			temp.x += otherBird->x;
+			temp.y += otherBird->y;
+
+			double length = temp.getLength();
+			if (length > STICK_INTENSITY) {
+				temp.x = temp.x / length * STICK_INTENSITY;
+				temp.y = temp.y / length * STICK_INTENSITY;
+			}
+
+			returnVector.x += temp.x;
+			returnVector.y += temp.y;
+		}
+	}
+
+	return returnVector;
 }
 
 Vector Bird::getOppositeVector(Vector v) {
