@@ -80,9 +80,9 @@ void Bird::Update(float deltaTime) {
 	Vector three = stayNearOthers(getNearbyBirds(STICK_RADIUS));
 	Vector four = Steer();
 
-	if (AVOID_COLLISION) { if(one.x != 0 && one.y != 0) direction.x += one.x; direction.y += one.y; }
-	if (MIMIC_DIRECTION) { if (two.x != 0 && two.y != 0) direction.x += two.x; direction.y += two.y; }
-	if (STAY_NEAR_OTHERS) { if (three.x != 0 && three.y != 0) direction.x += three.x; direction.y += three.y; }
+	if (AVOID_COLLISION) { if(one.x != 0 || one.y != 0) direction.x += one.x; direction.y += one.y; }
+	if (MIMIC_DIRECTION) { if (two.x != 0 || two.y != 0) direction.x += two.x; direction.y += two.y; }
+	if (STAY_NEAR_OTHERS) { if (three.x != 0 || three.y != 0) direction.x += three.x; direction.y += three.y; }
 	if (RANDOM_STEERING) { direction.x += four.x, direction.y += four.y; }
 
 	SetOffset(x-5, y-5, angle);
@@ -172,15 +172,15 @@ Vector Bird::stayNearOthers(std::vector<Bird*> nearbyBirds) {
 	Vector returnVector;
 	returnVector.x = 0;
 	returnVector.y = 0;
-
+	
 	for each (Bird* otherBird in nearbyBirds)
 	{
 		if (otherBird->id != id) {
 			Vector temp;
 			temp.x = 0;
 			temp.y = 0;
-			temp.x += otherBird->x;
-			temp.y += otherBird->y;
+			temp.x += otherBird->x - x;
+			temp.y += otherBird->y - y;
 
 			double length = temp.getLength();
 			if (length > STICK_INTENSITY) {
